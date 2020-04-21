@@ -91,16 +91,72 @@ router.get('/', (req, res, next) => {
 
 });
 
-router.patch('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'listing updated'
-    });
+router.get('/:listingId', (req, res, next) => {
+    const id = req.params.listingId;
+    Listing
+        .findById(id)
+        .select('name price description listingImage _id')
+        .exec()
+        .then(doc => {
+            if (doc) {
+                res.status(200).json({
+                    product: doc
+                })
+            } else {
+                res.status(404).json({
+                    message: 'No valid listing found for given ID'
+                })
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
 });
 
-router.delete('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'listing deleted'
-    });
+router.patch('/:listingId', (req, res, next) => {
+    const id = req.params.listingId;
+    const updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value
+    }
+    Listing
+        .updateOne({ _id: id }, { $set : updateOps })
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: 'Listing updated',
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/listings/' + id
+                }
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        });
 });
+
+router.delete("/:listingId", (req, res, next) => {
+    const id = req.params.listingId;
+    Listing.deleteOne({ _id: id })
+      .exec()
+      .then(result => {
+        res.status(200).json({
+            message: 'Product deleted'
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({
+          error: err
+        });
+      });
+  });
 
 module.exports = router;
