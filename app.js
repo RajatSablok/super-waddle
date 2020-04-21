@@ -8,8 +8,8 @@ const app = express ();
 const listingRoutes = require('./api/routes/listings');
 
 const PORT = process.env.PORT || 3000;
-
-const dbURI = 'mongodb+srv://RajatSablok:rLd2waYs3vElya3c@cluster0-w6myw.mongodb.net/test?retryWrites=true&w=majority';
+const dbPass = process.env.MONGO_ATLAS_PW
+const dbURI = 'mongodb+srv://RajatSablok:'+dbPass+'@cluster0-w6myw.mongodb.net/test?retryWrites=true&w=majority';
 
 mongoose
   .connect( dbURI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
