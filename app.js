@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const app = express ();
 
 const listingRoutes = require('./api/routes/listings');
+const cartRoutes = require('./api/routes/carts');
 
 const PORT = process.env.PORT || 3000;
 const dbPass = process.env.MONGO_ATLAS_PW
@@ -24,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/listings', listingRoutes);
+app.use('/cart', cartRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
