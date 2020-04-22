@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const router = express.Router();
 
-
 const Listing = require('../models/listing');
+const checkAuth = require('../middleware/check-auth');
 
 const storage = multer.diskStorage({
     destination: (req, res, cb) => {
@@ -31,7 +31,7 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
-router.post('/', upload.single('listingImage'), (req, res, next) => {
+router.post('/', checkAuth ,upload.single('listingImage'), (req, res, next) => {
     const listing = new Listing({
         _id: new mongoose.Types.ObjectId,
         name: req.body.name,
@@ -116,7 +116,7 @@ router.get('/:listingId', (req, res, next) => {
         })
 });
 
-router.patch('/:listingId', (req, res, next) => {
+router.patch('/:listingId', checkAuth, (req, res, next) => {
     const id = req.params.listingId;
     const updateOps = {};
     for (const ops of req.body) {
@@ -142,7 +142,7 @@ router.patch('/:listingId', (req, res, next) => {
         });
 });
 
-router.delete("/:listingId", (req, res, next) => {
+router.delete("/:listingId", checkAuth, (req, res, next) => {
     const id = req.params.listingId;
     Listing.deleteOne({ _id: id })
       .exec()

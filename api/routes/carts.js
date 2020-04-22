@@ -5,8 +5,9 @@ const router = express.Router();
 
 const Cart = require('../models/cart');
 const Listing = require('../models/listing');
+const checkAuth = require('../middleware/check-auth');
 
-router.get('/', (req, res, next) => {
+router.get('/', checkAuth, (req, res, next) => {
     Cart
         .find()
         .populate('name')
@@ -32,7 +33,7 @@ router.get('/', (req, res, next) => {
         })
 });
 
-router.post("/", (req, res, next) => {
+router.post("/", checkAuth, (req, res, next) => {
     Listing.findById(req.body.listingId)
         .then(listing => {
             if (!listing) {
@@ -67,7 +68,7 @@ router.post("/", (req, res, next) => {
         });
 });
 
-router.get('/:cartId', (req, res, next) => {
+router.get('/:cartId', checkAuth, (req, res, next) => {
     Cart
         .findById(req.params.cartId)
         .populate('listing', '-__v')
@@ -90,7 +91,7 @@ router.get('/:cartId', (req, res, next) => {
         })
 });
 
-router.delete('/:cartId', (req, res, next) => {
+router.delete('/:cartId', checkAuth, (req, res, next) => {
     Cart
     .deleteOne({ _id: req.params.cartId })
     .exec()
