@@ -90,14 +90,14 @@ router.post("/", checkAuth, (req, res, next) => {
 // this will get ind items in cart // /cart with userid in body can get user's cart
 router.get('/:userId', checkAuth, (req, res, next) => {
     Cart
-        .findById(req.params.userId)
+        .find({ userId: req.params.userId })
         .populate('user', '-__v')
         .select('-__v')
         .exec()
         .then(cart => {
             if (!cart) {
                 return res.status(404).json({
-                    message: 'Item not found in cart??'
+                    message: 'No items found in cart'
                 })
             }
             res.status(200).json({
