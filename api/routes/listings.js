@@ -52,7 +52,8 @@ router.post('/', checkAuth ,upload.single('listingImage'), (req, res, next) => {
                     price: result.price,
                     quantity: result.quantity,
                     listingImage: result.listingImage,
-                    description: result.description
+                    description: result.description,
+                    listingCreatedBy: result.createdBy
                 }
             });
         })

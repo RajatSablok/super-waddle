@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 
 const Cart = require('../models/cart');
+const User = require('../models/user');
 const Listing = require('../models/listing');
 const checkAuth = require('../middleware/check-auth');
 
@@ -18,9 +19,19 @@ router.get('/', checkAuth, (req, res, next) => {
                 count: docs.length,
                 cartItems: docs.map(doc => {
                     return {
-                        _id: doc._id,
-                        listing: doc.listing,
-                        quantity: doc.quantity
+                        // cart_id: doc._id,
+                        // listingId: doc.listingId,
+                        // listingName: doc.listingName,
+                        // quantity: doc.quantity,
+                        // cart: docs,
+                        cart: doc
+
+                        // "_id": "5ea02f877349fa4fdc46cfaf",
+                        // "listingId": "5ea025a3f7a0063e8c7d87b5",
+                        // "listingName": "iPhone 8",
+                        // "quantity": 2,
+                        // "userId": "5ea028d28ce7fa3f5c6e2816",
+                        // "userName": "testtest"
                     }
                 })
             })
@@ -75,10 +86,12 @@ router.post("/", checkAuth, (req, res, next) => {
         });
 });
 
-router.get('/:cartId', checkAuth, (req, res, next) => {
+
+// this will get ind items in cart // /cart with userid in body can get user's cart
+router.get('/:userId', checkAuth, (req, res, next) => {
     Cart
-        .findById(req.params.cartId)
-        .populate('listing', '-__v')
+        .findById(req.params.userId)
+        .populate('user', '-__v')
         .select('-__v')
         .exec()
         .then(cart => {
@@ -95,7 +108,7 @@ router.get('/:cartId', checkAuth, (req, res, next) => {
             res.status(500).json({
                 error: err
             })
-        })
+        })  
 });
 
 router.delete('/:cartId', checkAuth, (req, res, next) => {
