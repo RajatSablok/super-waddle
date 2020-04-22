@@ -37,31 +37,38 @@ router.post("/", checkAuth, (req, res, next) => {
     Listing.findById(req.body.listingId)
         .then(listing => {
             if (!listing) {
-            return res.status(404).json({
-                message: "Listing not found"
-            });
+                return res.status(404).json({
+                    message: "Listing not found"
+                });
             }
         const cart = new Cart({
             _id: mongoose.Types.ObjectId(),
+            listingId: req.body.listingId,
+            listingName: listing.name,
             quantity: req.body.quantity,
-            listing: req.body.listingId,
-            listingName: listing.name
+            userId: req.body.userId,
+            userName: req.body.userName
         });
         return cart.save();
         })
         .then(result => {
             console.log(result);
             res.status(201).json({
-            message: "Item added to cart",
-            itemAdded: {
-                _id: result._id,
-                listing: result.listing,
-                quantity: result.quantity
-            }
+                message: "Item added to cart",
+                userDetails: {
+                    userId: result.userId,
+                    userName: result.userName,
+                },
+                itemAdded: {
+                    cartItem_id: result._id,
+                    listingId: result.listing,
+                    listingName: result.listingName,
+                    quantity: result.quantity
+                }
             });
         })
         .catch(err => {
-            console.log(err);
+            // console.log(err);
             res.status(500).json({
                 error: err
             });

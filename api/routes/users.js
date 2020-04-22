@@ -26,15 +26,21 @@ router.post('/signup', (req, res, next) => {
                         const user = new User({
                             _id: new mongoose.Types.ObjectId(),
                             email: req.body.email,
-                            password: hash
+                            password: hash,
+                            name: req.body.name,
+                            mobileNumber: req.body.mobileNumber
                         });
                         user
                             .save()
                             .then(result => {
                                 res.status(201).json({
                                     message: 'User created',
-                                    email: result.email,
-                                    _id: result._id
+                                    userDetails: {
+                                        userId: result._id,
+                                        email: result.email,
+                                        name: result.name,
+                                        mobileNumber: result.mobileNumber
+                                    }
                                 })
                             })
                     }
@@ -77,7 +83,11 @@ router.post('/login', (req, res, next) => {
                     );
                     return res.status(200).json({
                         message: 'Auth successful',
-                        token: token
+                        userDetails: {
+                            userId: user[0]._id,
+                            userName: user[0].name,
+                            token: token
+                        }
                     })
                 }
                 res.status(401).json({

@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads/');
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname + Date.now())
+        cb(null,  Date.now() + file.originalname)
     }
 });
 
@@ -36,8 +36,10 @@ router.post('/', checkAuth ,upload.single('listingImage'), (req, res, next) => {
         _id: new mongoose.Types.ObjectId,
         name: req.body.name,
         price: req.body.price,
+        quantity: req.body.quantity,
         description: req.body.description,
-        listingImage: req.file.path
+        listingImage: req.file.path,
+        createdBy: req.body.createdBy
     });
     listing
         .save()
@@ -45,9 +47,10 @@ router.post('/', checkAuth ,upload.single('listingImage'), (req, res, next) => {
             res.status(201).json({
                 message: 'Created listing successfully',
                 createdListing: {
+                    listing_id: result.id,
                     name: result.name,
                     price: result.price,
-                    _id: result.id,
+                    quantity: result.quantity,
                     listingImage: result.listingImage,
                     description: result.description
                 }
@@ -65,18 +68,19 @@ router.post('/', checkAuth ,upload.single('listingImage'), (req, res, next) => {
 router.get('/', (req, res, next) => {
     Listing
         .find()
-        .select('name price listingImage _id')
+        .select('-__v')
         .exec()
         .then(docs => {
             const result = {
                 count: docs.length,
                 listings: docs.map(doc => {
                     return {
+                        listing_id: doc._id,
                         name: doc.name,
                         price: doc.price,
                         description: doc.description,
                         listingImage: doc.listingImage,
-                        listing_id: doc._id
+                        listingBy: doc.createdBy
                     }
                 })
             }
