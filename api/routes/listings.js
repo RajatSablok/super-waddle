@@ -76,12 +76,7 @@ router.get('/', (req, res, next) => {
                 count: docs.length,
                 listings: docs.map(doc => {
                     return {
-                        listing_id: doc._id,
-                        name: doc.name,
-                        price: doc.price,
-                        description: doc.description,
-                        listingImage: doc.listingImage,
-                        listingBy: doc.createdBy
+                        individualListing: doc
                     }
                 })
             }
@@ -100,7 +95,7 @@ router.get('/:listingId', (req, res, next) => {
     const id = req.params.listingId;
     Listing
         .findById(id)
-        .select('name price description listingImage _id')
+        .select('-__v')
         .exec()
         .then(doc => {
             if (doc) {

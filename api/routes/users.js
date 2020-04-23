@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 const User = require('../models/user');
+const checkAuth = require('../middleware/check-auth');
 
 router.post('/signup', (req, res, next) => {
     User
@@ -94,6 +95,22 @@ router.post('/login', (req, res, next) => {
                     message: 'Auth failed'
                 })
             })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        })
+})
+
+router.delete('/:userId', checkAuth, (req, res, next) => {
+    User
+        .remove({ _id: req.params.userId })
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                message: 'User deleted'
+            });
         })
         .catch(err => {
             res.status(500).json({

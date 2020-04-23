@@ -5,8 +5,8 @@ const cartSchema = mongoose.Schema({
     listingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Listing', required: true},
     listingName: { type: String, required: true },
     quantity: { type: Number, required: true},
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}, //jiska cart hai wo user
-    userName: { type: String, ref: 'User', required: true } //jiska cart hai wo user
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}, 
+    userName: { type: String, ref: 'User', required: true } 
 });
 
 module.exports = mongoose.model('Cart', cartSchema);
