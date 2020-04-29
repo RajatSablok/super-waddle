@@ -95,7 +95,7 @@ router.get('/:userId', checkAuth, (req, res, next) => {
         .select('-__v')
         .exec()
         .then(cart => {
-            if (!cart) {
+            if (cart.length <1) {
                 return res.status(404).json({
                     message: 'No items found in cart'
                 })

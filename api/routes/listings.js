@@ -176,7 +176,7 @@ router.get('/user/:createdBy', checkAuth, (req, res, next) => {
         .exec()
         .then(listings => {
             if (listings.length < 1) {
-                res.status(200).json({
+                res.status(404).json({
                     count: listings.length,
                     message: 'No listings found for the given userId'
                 })
