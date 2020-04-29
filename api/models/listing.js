@@ -8,6 +8,8 @@ const listingSchema = mongoose.Schema({
     listingImage: {type: String, required: true},
     description: { type: String, required: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+    biddingApplicable: { type: Boolean, required: true },
+    offerApplicable: { type: Boolean, required: true },
 });
 
 module.exports = mongoose.model('Listing', listingSchema);

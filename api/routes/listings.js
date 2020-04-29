@@ -39,7 +39,9 @@ router.post('/', checkAuth ,upload.single('listingImage'), (req, res, next) => {
         quantity: req.body.quantity,
         description: req.body.description,
         listingImage: req.file.path,
-        createdBy: req.body.createdBy
+        createdBy: req.body.createdBy,
+        biddingApplicable: req.body.biddingApplicable,
+        offerApplicable: req.body.offerApplicable
     });
     listing
         .save()
@@ -53,7 +55,9 @@ router.post('/', checkAuth ,upload.single('listingImage'), (req, res, next) => {
                     quantity: result.quantity,
                     listingImage: result.listingImage,
                     description: result.description,
-                    listingCreatedBy: result.createdBy
+                    listingCreatedBy: result.createdBy,
+                    biddingApplicable: result.biddingApplicable,
+                    offerApplicable: result.offerApplicable
                 }
             });
         })
@@ -66,6 +70,7 @@ router.post('/', checkAuth ,upload.single('listingImage'), (req, res, next) => {
 
 });
 
+//Get all listings
 router.get('/', (req, res, next) => {
     Listing
         .find()
@@ -91,6 +96,7 @@ router.get('/', (req, res, next) => {
 
 });
 
+//Get individual listings
 router.get('/:listingId', (req, res, next) => {
     const id = req.params.listingId;
     Listing
@@ -116,6 +122,7 @@ router.get('/:listingId', (req, res, next) => {
         })
 });
 
+//Update a listing
 router.patch('/:listingId', checkAuth, (req, res, next) => {
     const id = req.params.listingId;
     const updateOps = {};
@@ -142,21 +149,50 @@ router.patch('/:listingId', checkAuth, (req, res, next) => {
         });
 });
 
+//Delete a listing
 router.delete("/:listingId", checkAuth, (req, res, next) => {
     const id = req.params.listingId;
-    Listing.deleteOne({ _id: id })
-      .exec()
-      .then(result => {
+    Listing
+    .deleteOne({ _id: id })
+    .exec()
+    .then(result => {
         res.status(200).json({
             message: 'Product deleted'
         });
-      })
-      .catch(err => {
+    })
+    .catch(err => {
         console.log(err);
         res.status(500).json({
-          error: err
+            error: err
         });
-      });
-  });
+    });
+});
+
+//Get all listings for a particular user
+router.get('/user/:createdBy', checkAuth, (req, res, next) => {
+    Listing
+        .find({ createdBy : req.params.createdBy })
+        .select('-__v')
+        .exec()
+        .then(listings => {
+            if (listings.length < 1) {
+                res.status(200).json({
+                    count: listings.length,
+                    message: 'No listings found for the given userId'
+                })
+            } else {
+                res.status(200).json({
+                    count: listings.length,
+                    individualListings: listings
+                })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        })
+});
+
 
 module.exports = router;

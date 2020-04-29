@@ -5,7 +5,9 @@ const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
+const Cart = require('../models/cart');
 const User = require('../models/user');
+const Listing = require('../models/listing');
 const checkAuth = require('../middleware/check-auth');
 
 router.post('/signup', (req, res, next) => {
@@ -137,7 +139,10 @@ router.delete('/:userId', checkAuth, (req, res, next) => {
                 error: err
             })
         })
-})
+});
+
+
+
 
 //Get all registered accounts for admin use
 // router.get('/accounts', (req, res, next) => {
