@@ -5,9 +5,10 @@ const bodyParser = require("body-parser");
 
 const app = express ();
 
-const listingRoutes = require('./api/routes/listings');
 const cartRoutes = require('./api/routes/carts');
 const userRoutes = require('./api/routes/users');
+const listingRoutes = require('./api/routes/listings');
+const biddingRoutes = require('./api/routes/biddings');
 
 const dbPass = process.env.MONGO_ATLAS_PW
 const dbURI = 'mongodb+srv://RajatSablok:'+dbPass+'@cluster0-w6myw.mongodb.net/test?retryWrites=true&w=majority';
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
 app.use('/listings', listingRoutes);
 app.use('/cart', cartRoutes);
 app.use('/user', userRoutes);
+app.use('/bid', biddingRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("Not found");
