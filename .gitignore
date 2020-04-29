@@ -1,3 +1,4 @@
 node_modules
 uploads
 nodemon.json
+api/middleware/verify-account.js

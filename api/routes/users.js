@@ -18,6 +18,9 @@ router.post('/signup', (req, res, next) => {
                     message: 'Email already exists'
                 })
             } else {
+
+                
+                //
                 bcrypt.hash(req.body.password, 10, (err, hash) => {
                     if (err) {
                         return res.status(500).json({
@@ -103,6 +106,23 @@ router.post('/login', (req, res, next) => {
         })
 })
 
+//Get user's profile
+router.get('/:userId', checkAuth, (req, res, next) => {
+    User
+        .findById(req.params.userId)
+        .select('-__v')
+        .exec()
+        .then(user => {
+            res.status(200).json(user)
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        })
+})
+
+//Delete current user
 router.delete('/:userId', checkAuth, (req, res, next) => {
     User
         .remove({ _id: req.params.userId })
@@ -118,5 +138,29 @@ router.delete('/:userId', checkAuth, (req, res, next) => {
             })
         })
 })
+
+//Get all registered accounts for admin use
+// router.get('/accounts', (req, res, next) => {
+//     User
+//         .find()
+//         .then(docs => {
+//             const result = {
+//                 count: docs.length,
+//                 listings: docs.map(doc => {
+//                     return {
+//                         individualUser: doc
+//                     }
+//                 })
+//             }
+//             res.status(200).json(result);
+//         })
+//         .catch(err => {
+//             console.log(err);
+//             res.status(500).json({
+//                 error: err
+//             })
+//         })
+// })
+
 
 module.exports = router;

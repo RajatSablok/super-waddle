@@ -16,6 +16,7 @@ const userSchema = mongoose.Schema({
         match: /^([7-9][0-9]{9})$/g
     },
     password: { type: String, required: true },
+    verify: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model('User', userSchema);
