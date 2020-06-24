@@ -1,16 +1,21 @@
-const jwt = require('jsonwebtoken');
+const JWT = require("jsonwebtoken");
 
-module.exports = (req, res, next) => {
-    try {
-        const token = req.headers.authorization.split(" ")[1];
-        console.log(token);
-        const decoded = jwt.verify(token, process.env.JWT_KEY)
-        req.userData = decoded;
-    } catch {
-        return res.status(401).json({
-            message: 'Auth faileddd'
-        })
-    }
+module.exports = function (req, res, next) {
+  const token = req.header("auth-token");
+  if (!token)
+    return res.status(401).json({
+      message: "Access Denied!, no token entered",
+    });
+
+  try {
+    const verified = JWT.verify(token, "jwtpass");
+
+    req.user = verified;
+    // console.log(verified);
 
     next();
-}
+    // console.log("next");
+  } catch (err) {
+    res.status(400).send({ error: "auth failed, check auth-token222" });
+  }
+};
