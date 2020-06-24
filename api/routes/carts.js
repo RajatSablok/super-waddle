@@ -12,18 +12,16 @@ const checkAuth = require("../middleware/check-auth");
 router.get("/", checkAuth, async (req, res, next) => {
   const userId = req.user.userId;
   await User.findById(userId)
-    // .populate("listingId")
     // .populate({
-    //   path: "cart",
-
+    //   path: "shoppingCart",
     //   populate: { path: "listingId" },
     // })
     .exec()
     .then(async (user) => {
-      const numItems = user.cart.length;
+      const numItems = user.shoppingCart.length;
       await res.status(200).json({
         count: numItems,
-        cart: user.cart,
+        cart: user.shoppingCart,
       });
     })
     .catch(async (err) => {
@@ -41,7 +39,7 @@ router.post("/", checkAuth, async (req, res, next) => {
   const quantity = req.body.quantity;
   await User.updateOne(
     { _id: userId },
-    { $push: { cart: { listingId, quantity } } }
+    { $push: { shoppingCart: { listingId, quantity } } }
   )
     .then(async (result) => {
       res.status(200).json({
@@ -61,7 +59,7 @@ router.delete("/:cartItemId", checkAuth, async (req, res, next) => {
   const cartItemId = req.params.cartItemId;
   await User.updateOne(
     { _id: userId },
-    { $pull: { cart: { _id: cartItemId } } }
+    { $pull: { shoppingCart: { _id: cartItemId } } }
   )
     .then((result) => {
       res.status(200).json({

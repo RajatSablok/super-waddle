@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
   },
   password: { type: String, required: true },
   verify: { type: Boolean, default: false },
-  cart: [
+  shoppingCart: [
     {
       listingId: {
         type: mongoose.Schema.Types.ObjectId,
