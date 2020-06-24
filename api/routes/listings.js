@@ -125,22 +125,35 @@ router.get("/:listingId", (req, res, next) => {
 });
 
 //Update a listing
-router.patch("/:listingId", checkAuth, (req, res, next) => {
-  const id = req.params.listingId;
+router.patch("/:listingId", checkAuth, async (req, res, next) => {
+  const listingId = req.params.listingId;
+  const userId = req.user.userId;
   const updateOps = {};
-  for (const ops of req.body) {
-    updateOps[ops.propName] = ops.value;
-  }
-  Listing.updateOne({ _id: id }, { $set: updateOps })
+  await Listing.findById(listingId)
     .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "Listing updated",
-        request: {
-          type: "GET",
-          url: "http://localhost:3000/listings/" + id,
-        },
-      });
+    .then(async (listing) => {
+      if (listing.createdBy != userId) {
+        return res.status(403).json({
+          message: "This is not your listing.",
+        });
+      }
+      for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+      }
+      await Listing.updateOne({ _id: listingId }, { $set: updateOps })
+        .exec()
+        .then(async (result) => {
+          await res.status(200).json({
+            message: "Listing updated",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(400).json({
+            message: "Something went wrong",
+            error: err,
+          });
+        });
     })
     .catch((err) => {
       console.log(err);
@@ -152,14 +165,31 @@ router.patch("/:listingId", checkAuth, (req, res, next) => {
 });
 
 //Delete a listing
-router.delete("/:listingId", checkAuth, (req, res, next) => {
-  const id = req.params.listingId;
-  Listing.deleteOne({ _id: id })
+router.delete("/:listingId", checkAuth, async (req, res, next) => {
+  const listingId = req.params.listingId;
+  const userId = req.user.userId;
+  await Listing.findById(listingId)
     .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "Listing deleted",
-      });
+    .then(async (listing) => {
+      if (listing.createdBy != userId) {
+        return res.status(403).json({
+          message: "This is not your listing.",
+        });
+      }
+      Listing.deleteOne({ _id: listingId })
+        .exec()
+        .then((result) => {
+          res.status(200).json({
+            message: "Listing deleted",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(400).json({
+            message: "Something went wrong",
+            error: err,
+          });
+        });
     })
     .catch((err) => {
       console.log(err);
