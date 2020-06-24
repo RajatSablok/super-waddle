@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 
+const Listing = require("../models/listing");
+// const Bidding = require("../models/bidding")
+
 const userSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   name: { type: String, required: true },
@@ -15,6 +18,15 @@ const userSchema = mongoose.Schema({
   },
   password: { type: String, required: true },
   verify: { type: Boolean, default: false },
+  cart: [
+    {
+      listingId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Listing",
+      },
+      quantity: { type: Number },
+    },
+  ],
 });
 
 module.exports = mongoose.model("User", userSchema);

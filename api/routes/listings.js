@@ -34,6 +34,7 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
+//Create listing
 router.post("/", checkAuth, upload.single("listingImage"), (req, res, next) => {
   const listing = new Listing({
     _id: new mongoose.Types.ObjectId(),
@@ -107,7 +108,7 @@ router.get("/:listingId", (req, res, next) => {
     .then((doc) => {
       if (doc) {
         res.status(200).json({
-          product: doc,
+          listing: doc,
         });
       } else {
         res.status(404).json({
