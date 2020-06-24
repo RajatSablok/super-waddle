@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
+const dotenv = require("dotenv").config();
 
 const app = express();
 
@@ -10,11 +11,9 @@ const userRoutes = require("./api/routes/users");
 const listingRoutes = require("./api/routes/listings");
 const biddingRoutes = require("./api/routes/biddings");
 
-const dbPass = process.env.MONGO_ATLAS_PW;
-const dbURI =
-  "mongodb+srv://RajatSablok:" +
-  dbPass +
-  "@cluster0-w6myw.mongodb.net/test?retryWrites=true&w=majority";
+// console.log(process.env.MONGO_ATLAS_PW);
+// const dbPass = process.env.MONGO_ATLAS_PW;
+const dbURI = process.env.dbURI;
 
 mongoose
   .connect(dbURI, {

@@ -104,14 +104,17 @@ router.post("/login", (req, res, next) => {
 //Get user's profile
 router.get("/profile", checkAuth, (req, res, next) => {
   User.findById(req.user.userId)
-    .select("-__v")
+    .select("-__v -password")
     .exec()
     .then((user) => {
-      res.status(200).json(user);
+      res.status(200).json({
+        userDetails: user,
+      });
     })
     .catch((err) => {
       res.status(400).json({
         message: "Something went wrong",
+        error: err,
       });
     });
 });
@@ -123,7 +126,7 @@ router.patch("/profile", checkAuth, (req, res, next) => {
   for (const ops of req.body) {
     updateOps[ops.propName] = ops.value;
   }
-  User.updateOne({ _id: id }, { $set: updateOps })
+  User.updateOne({ _id: userId }, { $set: updateOps })
     .exec()
     .then((result) => {
       res.status(200).json({
@@ -131,7 +134,8 @@ router.patch("/profile", checkAuth, (req, res, next) => {
       });
     })
     .catch((err) => {
-      res.status(500).json({
+      res.status(400).json({
+        message: "Something went wrong",
         error: err,
       });
     });
@@ -148,6 +152,7 @@ router.delete("/profile", checkAuth, (req, res, next) => {
     })
     .catch((err) => {
       res.status(500).json({
+        message: "Something went wrong",
         error: err,
       });
     });

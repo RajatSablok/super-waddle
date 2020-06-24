@@ -8,7 +8,7 @@ module.exports = function (req, res, next) {
     });
 
   try {
-    const verified = JWT.verify(token, "jwtpass");
+    const verified = JWT.verify(token, process.env.JWT_key);
 
     req.user = verified;
     // console.log(verified);
