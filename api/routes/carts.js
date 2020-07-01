@@ -14,10 +14,12 @@ router.get("/", checkAuth, async (req, res, next) => {
   await User.findById(userId)
     // .populate({
     //   path: "shoppingCart",
+
     //   populate: { path: "listingId" },
     // })
     .exec()
     .then(async (user) => {
+      // console.log(user);
       const numItems = user.shoppingCart.length;
       await res.status(200).json({
         count: numItems,

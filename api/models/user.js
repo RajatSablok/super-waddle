@@ -18,12 +18,10 @@ const userSchema = mongoose.Schema({
   },
   password: { type: String, required: true },
   verify: { type: Boolean, default: false },
+
   shoppingCart: [
     {
-      listingId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Listing",
-      },
+      listingId: { type: mongoose.Schema.Types.ObjectID, ref: "Listing" },
       quantity: { type: Number },
     },
   ],
