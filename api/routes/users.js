@@ -8,6 +8,7 @@ const router = express.Router();
 const Cart = require("../models/cart");
 const User = require("../models/user");
 const Listing = require("../models/listing");
+
 const checkAuth = require("../middleware/check-auth");
 
 router.post("/signup", (req, res, next) => {
@@ -58,7 +59,7 @@ router.post("/login", (req, res, next) => {
     .then((user) => {
       if (user.length < 1) {
         return res.status(401).json({
-          message: "Email not found, please sugn up to continue",
+          message: "Email not found, please sign up to continue",
         });
       }
       bcrypt.compare(req.body.password, user[0].password, (err, result) => {
@@ -102,8 +103,8 @@ router.post("/login", (req, res, next) => {
 });
 
 //Get user's profile
-router.get("/profile", checkAuth, (req, res, next) => {
-  User.findById(req.user.userId)
+router.get("/profile", checkAuth, async (req, res, next) => {
+  await User.findById(req.user.userId)
     .select("-__v -password")
     .exec()
     .then((user) => {
@@ -142,43 +143,30 @@ router.patch("/profile", checkAuth, (req, res, next) => {
 });
 
 //Delete current user
-router.delete("/profile", checkAuth, (req, res, next) => {
-  User.deleteOne({ _id: req.user.userId })
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: "User deleted",
-      });
+router.delete("/profile", checkAuth, async (req, res, next) => {
+  const userId = req.user.userId;
+  await Listing.deleteMany({ createdBy: userId })
+    .then(async (result1) => {
+      await User.deleteOne({ _id: userId })
+        .exec()
+        .then(async (result) => {
+          await res.status(200).json({
+            message: "User deleted",
+          });
+        })
+        .catch(async (err) => {
+          await res.status(500).json({
+            message: "Something went wrong",
+            error: err,
+          });
+        });
     })
-    .catch((err) => {
-      res.status(500).json({
+    .catch(async (err) => {
+      await res.status(500).json({
         message: "Something went wrong",
         error: err,
       });
     });
 });
-
-//Get all registered accounts for admin use
-// router.get('/accounts', (req, res, next) => {
-//     User
-//         .find()
-//         .then(docs => {
-//             const result = {
-//                 count: docs.length,
-//                 listings: docs.map(doc => {
-//                     return {
-//                         individualUser: doc
-//                     }
-//                 })
-//             }
-//             res.status(200).json(result);
-//         })
-//         .catch(err => {
-//             console.log(err);
-//             res.status(500).json({
-//                 error: err
-//             })
-//         })
-// })
 
 module.exports = router;

@@ -75,9 +75,13 @@ router.post("/", checkAuth, upload.single("listingImage"), (req, res, next) => {
 });
 
 //Get all listings
-router.get("/", (req, res, next) => {
+router.get("/all", (req, res, next) => {
   Listing.find()
     .select("-__v")
+    .populate({
+      path: "createdBy",
+      select: "name",
+    })
     .exec()
     .then((docs) => {
       const result = {
@@ -100,14 +104,18 @@ router.get("/", (req, res, next) => {
 });
 
 //Get individual listings
-router.get("/:listingId", (req, res, next) => {
+router.get("/:listingId", async (req, res, next) => {
   const id = req.params.listingId;
-  Listing.findById(id)
+  await Listing.findById(id)
     .select("-__v")
+    .populate({
+      path: "createdBy",
+      select: "name",
+    })
     .exec()
-    .then((doc) => {
+    .then(async (doc) => {
       if (doc) {
-        res.status(200).json({
+        await res.status(200).json({
           listing: doc,
         });
       } else {
@@ -116,9 +124,9 @@ router.get("/:listingId", (req, res, next) => {
         });
       }
     })
-    .catch((err) => {
+    .catch(async (err) => {
       console.log(err);
-      res.status(400).json({
+      await res.status(400).json({
         message: "Something went wrong",
         error: err,
       });
@@ -177,7 +185,7 @@ router.delete("/:listingId", checkAuth, async (req, res, next) => {
           message: "This is not your listing.",
         });
       }
-      Listing.deleteOne({ _id: listingId })
+      await Listing.deleteOne({ _id: listingId })
         .exec()
         .then((result) => {
           res.status(200).json({

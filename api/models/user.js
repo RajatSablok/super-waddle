@@ -8,20 +8,19 @@ const userSchema = mongoose.Schema({
   name: { type: String, required: true },
   email: {
     type: String,
-    required: true,
-    unique: true,
     match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
   },
   mobileNumber: {
     type: Number,
-    match: /^([7-9][0-9]{9})$/g,
   },
-  password: { type: String, required: true },
+  password: { type: String },
   verify: { type: Boolean, default: false },
-
+  avatar: {
+    type: String,
+  },
   shoppingCart: [
     {
-      listingId: { type: mongoose.Schema.Types.ObjectID, ref: "Listing" },
+      listingId: { type: mongoose.Schema.Types.ObjectId, ref: "Listing" },
       quantity: { type: Number },
     },
   ],
