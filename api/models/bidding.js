@@ -6,9 +6,7 @@ const biddingSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Listing",
     required: true,
-  }, //original listing ID
-  // listingName: { type: String, required: true }, //original listing name
-  // createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}, //seller ID
+  },
   bidAmount: { type: Number, required: true },
   bidBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });

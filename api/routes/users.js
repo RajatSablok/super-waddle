@@ -11,6 +11,7 @@ const Listing = require("../models/listing");
 
 const checkAuth = require("../middleware/check-auth");
 
+//Signup
 router.post("/signup", (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
@@ -53,6 +54,7 @@ router.post("/signup", (req, res, next) => {
     });
 });
 
+//Login
 router.post("/login", (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
@@ -168,5 +170,52 @@ router.delete("/profile", checkAuth, async (req, res, next) => {
       });
     });
 });
+
+//Get all listings creaded by a particular user
+router.get("/allListings", checkAuth, (req, res, next) => {
+  const userId = req.user.userId;
+  Listing.find({ createdBy: userId })
+    .select("-__v")
+    .exec()
+    .then((listings) => {
+      if (listings.length < 1) {
+        res.status(404).json({
+          count: listings.length,
+          message: "No listings found for the given userId",
+        });
+      } else {
+        res.status(200).json({
+          count: listings.length,
+          individualListings: listings,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({
+        message: "Something went wrong",
+        error: err,
+      });
+    });
+});
+
+// //Get all items in a user's cart
+// router.get("/cart", checkAuth, async (req, res, next) => {
+//   const userId = req.user.userId;
+//   await User.findById(userId)
+//     .populate("shoppingCart.listingId")
+//     .exec()
+//     .then(async (result) => {
+//       res.status(200).json({
+//         message: "Successfully retrieved",
+//         cart: result,
+//       });
+//     })
+//     .catch(async (err) => {
+//       await res.status(400).json({
+//         message: "Something went wrong",
+//         error: err,
+//       });
+//     });
+// });
 
 module.exports = router;

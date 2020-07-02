@@ -18,9 +18,13 @@ const userSchema = mongoose.Schema({
   avatar: {
     type: String,
   },
+
   shoppingCart: [
     {
-      listingId: { type: mongoose.Schema.Types.ObjectId, ref: "Listing" },
+      listingId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Listing",
+      },
       quantity: { type: Number },
     },
   ],

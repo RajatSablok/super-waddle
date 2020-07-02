@@ -209,30 +209,4 @@ router.delete("/:listingId", checkAuth, async (req, res, next) => {
     });
 });
 
-//Get all listings for a particular user
-router.get("/user/", checkAuth, (req, res, next) => {
-  Listing.find({ createdBy: req.user.userId })
-    .select("-__v")
-    .exec()
-    .then((listings) => {
-      if (listings.length < 1) {
-        res.status(404).json({
-          count: listings.length,
-          message: "No listings found for the given userId",
-        });
-      } else {
-        res.status(200).json({
-          count: listings.length,
-          individualListings: listings,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(400).json({
-        message: "Something went wrong",
-        error: err,
-      });
-    });
-});
-
 module.exports = router;

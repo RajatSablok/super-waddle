@@ -3,27 +3,24 @@ const mongoose = require("mongoose");
 
 const router = express.Router();
 
-const Cart = require("../models/cart");
+// const Cart = require("../models/cart");
 const User = require("../models/user");
 const Listing = require("../models/listing");
+
 const checkAuth = require("../middleware/check-auth");
 
-//Get items in a user's cart
+//Get all items in a user's cart
 router.get("/", checkAuth, async (req, res, next) => {
   const userId = req.user.userId;
   await User.findById(userId)
-    // .populate({
-    //   path: "shoppingCart",
-
-    //   populate: { path: "listingId" },
-    // })
+    .populate("shoppingCart.listingId", "-__v")
     .exec()
-    .then(async (user) => {
-      // console.log(user);
-      const numItems = user.shoppingCart.length;
-      await res.status(200).json({
-        count: numItems,
-        cart: user.shoppingCart,
+    .then(async (result) => {
+      const count = result.shoppingCart.length;
+      res.status(200).json({
+        message: "Successfully retrieved",
+        count,
+        cart: result.shoppingCart,
       });
     })
     .catch(async (err) => {
@@ -56,7 +53,7 @@ router.post("/", checkAuth, async (req, res, next) => {
     });
 });
 
-router.delete("/:cartItemId", checkAuth, async (req, res, next) => {
+router.delete("/item/:cartItemId", checkAuth, async (req, res, next) => {
   const userId = req.user.userId;
   const cartItemId = req.params.cartItemId;
   await User.updateOne(
